@@ -1,0 +1,47 @@
+FUNCTION lex_min_rotation(s, alphabet OPTIONAL)
+    n ← length of s
+    doubled ← s + s   // concatenate s with itself
+    // Step 1: Construct ranking of characters
+    rank ← empty map
+    IF alphabet is empty THEN
+        sorted_alpha ← unique characters of s sorted in ascending order
+        FOR i from 0 to length(sorted_alpha)-1
+            rank[ sorted_alpha[i] ] ← i
+        END FOR
+    ELSE
+        FOR i from 0 to length(alphabet)-1
+            rank[ alphabet[i] ] ← i
+        END FOR
+    END IF
+    // Step 2: Prefix-function-like array
+    f ← array of size (2*n), initialized with -1
+    k ← 0   // starting index of minimal rotation candidate
+    // Step 3: Iterate through doubled string
+    FOR j from 1 to (2*n - 1)
+        i ← f[j - k - 1]
+        WHILE (i != -1 AND rank[doubled[j]] != rank[doubled[k + i + 1]])
+            IF rank[doubled[j]] < rank[doubled[k + i + 1]] THEN
+                k ← j - i - 1   // update minimal rotation start
+            END IF
+            i ← f[i]
+        END WHILE
+        IF (i = -1 AND rank[doubled[j]] != rank[doubled[k]])
+            IF rank[doubled[j]] < rank[doubled[k]] THEN
+                k ← j
+            END IF
+            f[j - k] ← -1
+        ELSE
+            f[j - k] ← i + 1
+        END IF
+    END FOR
+    RETURN k   // starting index of lexicographically minimal rotation
+END FUNCTION
+
+MAIN:
+    dna ← "GATTACA"
+    alphabet ← "ACGT"
+    index ← lex_min_rotation(dna, alphabet)
+    minimal_rotation ← substring(dna, index to end) + substring(dna, 0 to index)
+    PRINT "Lexicographically minimal rotation: " + minimal_rotation
+    PRINT "Rotation starting index: " + index
+END MAIN

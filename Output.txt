@@ -1,0 +1,2 @@
+Lexicographically minimal rotation: ACAGATT
+Rotation starting index: 4
